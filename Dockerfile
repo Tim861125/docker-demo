@@ -39,4 +39,5 @@ EXPOSE ${PORT}
 ENTRYPOINT ["bun"]
 
 # 提供給 ENTRYPOINT 的預設參數
-CMD ["start"]
+# CMD ["start"]
+CMD ["test"]
