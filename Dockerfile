@@ -1,24 +1,20 @@
-# ARG 必須在 FROM 之前或之中定義，才能在 FROM 中使用
-# 我們定義一個建置時變數 BUN_VERSION，並給予預設值 "1.0"
-ARG BUN_VERSION=1.0
-ARG USER=TIM
-# 使用官方的 bun 映像作為基礎，版本由 ARG 決定
-FROM oven/bun:${BUN_VERSION}
+# 用最新的 BUN 映像作為基礎映像
+FROM oven/bun:latest
 
-# 加上標籤，提供作者、版本和描述等元數據
+# 加上標籤 docker inspect 查看
 LABEL maintainer="Tim.ding"
 LABEL description="A demo project for Docker with Bun and json-server."
-
 
 # 建構階段先用 root 安裝
 WORKDIR /app
 COPY package*.json ./
 RUN bun install
 
-# 建立 Tim 並切換
-# docker exec -it <container_id> bash
-RUN useradd -ms /bin/bash Tim
-USER Tim
+# ARG 定義建置時變數，可用 --build-arg USER=TIM 來傳遞
+# 若 USER 是 TIM，則建立使用者並切換；否則，將以 root 身份執行
+ARG USER
+RUN if [ "$USER" = "TIM" ]; then useradd -ms /bin/bash TIM; fi
+USER ${USER:-root}
 
 # 複製 package.json 到工作目錄
 COPY package.json ./
