@@ -32,7 +32,7 @@ EXPOSE ${PORT}
 # 設定容器的主要執行檔為 bun
 ENTRYPOINT ["bun"]
 
-# docker stop 預設發送 SIGTERM 信號
+# docker stop 預設發送 SIGTERM
 # SIGTERM
 # SIGKILL
 STOPSIGNAL SIGINT
