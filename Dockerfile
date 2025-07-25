@@ -5,13 +5,12 @@ FROM oven/bun:latest
 LABEL maintainer="Tim.ding"
 LABEL description="A demo project for Docker with Bun and json-server."
 
-# 建構階段先用 root 安裝
+#
 WORKDIR /app
 COPY package*.json ./
 RUN bun install
 
-# ARG 定義建置時變數，可用 --build-arg USER=TIM 來傳遞
-# 若 USER 是 TIM，則建立使用者並切換；否則，將以 root 身份執行
+# --build-arg USER=TIM
 ARG USER
 RUN if [ "$USER" = "TIM" ]; then useradd -ms /bin/bash TIM; fi
 USER ${USER:-root}
@@ -27,11 +26,16 @@ COPY . .
 # 可以用 -e 來覆寫: -e PORT=8080
 ENV PORT=3000
 
-# 讓容器對外開放 $PORT 變數指定的端口
+# $PORT 指定的端口
 EXPOSE ${PORT}
 
 # 設定容器的主要執行檔為 bun
 ENTRYPOINT ["bun"]
+
+# docker stop 預設發送 SIGTERM 信號
+# SIGTERM
+# SIGKILL
+STOPSIGNAL SIGINT
 
 # 提供給 ENTRYPOINT 的預設參數
 CMD ["test"]
