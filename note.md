@@ -67,3 +67,79 @@ askName();
 ```
 
 透過以上方法，我們就能成功建立一個可以長期在背景運行並隨時進行互動的 Docker 服務了。
+
+---
+
+# 如何在 WSL 2 中設定與使用 Docker
+
+這是在 Windows Subsystem for Linux 2 (WSL 2) 中設定和使用 Docker 的詳細步驟教學。
+
+### 事前準備：確認並設定 WSL 2
+
+在安裝 Docker 之前，您必須確保您的 Windows 系統已啟用 WSL 2，並且您使用的 Linux 發行版正在 WSL 2 模式下執行。
+
+1.  **檢查 WSL 版本**
+    打開 Windows 的 PowerShell 或命令提示字元（CMD），然後輸入以下指令：
+
+    ```bash
+    wsl -l -v
+    ```
+
+    您會看到類似以下的輸出：
+
+    ```
+      NAME            STATE           VERSION
+    * Ubuntu-22.04    Running         2
+    ```
+
+    請確保您想使用的 Linux 發行版（例如 `Ubuntu-22.04`）旁邊的 `VERSION` 顯示為 `2`。
+
+2.  **處理版本不符的情況**
+    *   **如果沒有安裝 WSL：** 請以系統管理員身分打開 PowerShell，執行 `wsl --install`，然後重新啟動電腦。
+    *   **如果版本是 1：** 您需要將其轉換為 WSL 2。執行以下指令（將 `<DistroName>` 換成您的發行版名稱）：
+        ```bash
+        wsl --set-version <DistroName> 2
+        ```
+
+### 步驟一：下載並安裝 Docker Desktop for Windows
+
+1.  **前往官網下載**
+    訪問 Docker 官方網站的下載頁面：[https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
+
+2.  **執行安裝程式**
+    下載完成後，執行安裝檔。在安裝過程中，請確保勾選了 "Use WSL 2 instead of Hyper-V (recommended)" 選項。
+
+3.  **完成安裝並重新啟動**
+    安裝完成後，依照指示重新啟動 Windows。
+
+### 步驟二：設定 Docker Desktop 與 WSL 2 整合
+
+1.  **啟動 Docker Desktop**
+    從 Windows 的「開始」功能表啟動 Docker Desktop。
+
+2.  **進入設定**
+    打開 Docker Desktop 應用程式視窗，點擊右上角的**齒輪圖示 (⚙️)** 進入設定。
+
+3.  **啟用 WSL 整合**
+    *   前往 `Resources` > `WSL Integration`。
+    *   找到您想要在其中使用 Docker 的發行版，並**打開它旁邊的開關**。
+    *   點擊 "Apply & Restart" 按鈕。
+
+### 步驟三：在 WSL 2 中驗證 Docker 是否運作正常
+
+1.  **打開您的 WSL 2 終端機**
+    從 Windows 的「開始」功能表打開您的 Linux 發行版（例如 "Ubuntu"）。
+
+2.  **檢查 Docker 版本**
+    在終端機中，輸入以下指令：
+    ```bash
+    docker --version
+    ```
+    如果成功，會顯示 Docker 的版本資訊。
+
+3.  **執行一個測試容器**
+    執行 `hello-world` 映像檔來確認所有設定都正確：
+    ```bash
+    docker run hello-world
+    ```
+    如果您看到 "Hello from Docker!" 的訊息，代表您已成功在 WSL 2 中設定好 Docker。
