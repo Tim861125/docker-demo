@@ -28,7 +28,7 @@ docker compose up -d
 要確認所有容器是否正在運行，可以執行：
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 您應該會看到 `interactive-app-container` 和 `api-server-container` 兩個容器的狀態。
@@ -57,13 +57,13 @@ docker attach interactive-app-container
 
 ```bash
 # 查看 api-server 的日誌
-docker-compose logs api-server
+docker compose logs api-server
 
 # 查看 interactive-app 的日誌
-docker-compose logs interactive-app
+docker compose logs interactive-app
 
 # 持續追蹤日誌 (類似 tail -f)
-docker-compose logs -f api-server
+docker compose logs -f api-server
 ```
 
 ### 6. 停止並清理環境
@@ -71,7 +71,7 @@ docker-compose logs -f api-server
 當您完成工作後，可以使用 `down` 指令來停止並移除由 `docker-compose up` 建立的所有資源。
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 這個指令會停止並移除容器、預設的網路，但不會移除由 `build` 產生的映像檔。

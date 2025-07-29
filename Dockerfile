@@ -38,4 +38,4 @@ ENTRYPOINT ["bun"]
 STOPSIGNAL SIGINT
 
 # 提供給 ENTRYPOINT 的預設參數
-CMD ["test"]
+CMD ["run", "index.ts"]

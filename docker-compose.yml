@@ -1,34 +1,38 @@
 # docker-compose.yml
 
-# 定義 services (服務)
 services:
   # 第一個服務：互動式問候 App
   interactive-app:
-    # 使用當前目錄的 Dockerfile 來建置映像檔
     build: .
-    # 給容器取一個好記的名字
+    image: wuxin-ding/interactive-app:1.0 # 自訂映像檔名稱
     container_name: interactive-app-container
-    # 這兩個是關鍵，等同於 docker run -it
-    # 保持標準輸入開啟，讓我們的 readline 可以持續接收輸入
     stdin_open: true
-    # 分配一個虛擬終端機
     tty: true
+    depends_on:
+      # 確保 api-server 先啟動
+      - api-server
 
   # 第二個服務：API Server
   api-server:
-    # 直接使用 bun 的官方映像檔，不另外建置
     image: oven/bun:latest
-    # 容器名稱
     container_name: api-server-container
-    # 將本地當前目錄掛載到容器的 /app 目錄
-    # 這樣 json-server 才能讀取到 db.json
-    volumes:
-      - ./:/app
-    # 設定容器內的工作目錄
     working_dir: /app
-    # 覆寫預設指令，執行我們的 start script
-    command: bun run start
-    # 將本機的 3000 port 映射到容器的 3000 port
-    # 格式是 "本機:容器"
+    # 啟動指令：先將初始 db.json 複製到持久化空間，然後啟動伺服器
+    # sh -c "..." 確保指令能被 shell 解析
+    # cp ... 2>/dev/null || true 複製時如果目的檔案已存在會報錯，用這種方式忽略錯誤
+    # --host 0.0.0.0 讓 json-server 監聽所有網路介面，容器外部才能訪問
+    command: >
+      sh -c "cp /app_init/db.json /data/db.json 2>/dev/null || true && 
+             bun json-server --watch /data/db.json --host 0.0.0.0 --port ${API_PORT}"
     ports:
-      - "3000:3000"
+      # 從 .env 檔案讀取 port
+      - "${API_PORT}:${API_PORT}"
+    volumes:
+      # 將本機的 db.json 作為「初始資料」唯讀掛載進去
+      - ./db.json:/app_init/db.json:ro
+      # 將具名磁碟區掛載到資料儲存位置
+      - db_data:/data
+
+# 在頂層定義具名磁碟區 (Named Volume)
+volumes:
+  db_data:
